@@ -7,6 +7,8 @@ import { SignOutRoutes } from "./routes/signout";
 import { errorHandler } from "./middlewares/error-handler";
 import { NotFoundError } from "./errors/not-found-error";
 import 'express-async-errors';
+import mongoose from "mongoose";
+import { load } from 'ts-dotenv';
 
 const app = expres();
 app.use(json())
@@ -22,6 +24,21 @@ app.get("*", async ()=>{
 
 app.use(errorHandler)
 
-app.listen(3000, ()=>{
-    console.log("Listen on port 3000!")
+const env = load({
+    MONGODB_URI: String
 })
+
+
+const start = async () => {
+    try{
+        await mongoose.connect(env.MONGODB_URI)
+    }catch(err){
+        console.log(err)
+    }
+    app.listen(3000, ()=>{
+        console.log("Listen on port 3000!")
+    })
+}
+
+
+start()
